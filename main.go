@@ -59,10 +59,10 @@ func main() {
 				bodyString := string(bodyBytes)
 				var resultMessage string
 				if !strings.Contains(bodyString, "Таких же изображений не найдено") {
-					resultMessage = fmt.Sprintf("❌ фейк: %v", searchUrl)
+					resultMessage = "❌ фейк"
 				} else {
 
-					resultMessage = fmt.Sprintf("✅ не фейк: %v", searchUrl)
+					resultMessage = "✅ не фейк"
 				}
 
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, resultMessage)
