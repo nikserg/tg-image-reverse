@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -12,7 +13,7 @@ import (
 )
 
 type Config struct {
-	BotToken             string
+	BotToken string
 }
 
 func main() {
@@ -58,7 +59,15 @@ func main() {
 				bodyString := string(bodyBytes)
 				var resultMessage string
 				if !strings.Contains(bodyString, "Таких же изображений не найдено") {
-					resultMessage = "❌ fake"
+					resultMessage = "❌ fake \n"
+					r := regexp.MustCompile(`<div class="CbirSites-ItemTitle"><a href="(.+?)" target="_blank" class="Link Link_theme_normal">(.+?)</a>`)
+					for index, match := range r.FindAllStringSubmatch(bodyString, -1) {
+						if index > 5 {
+							break
+						}
+						resultMessage += match[1] + " " + match[2] + "\n"
+					}
+
 				} else {
 
 					resultMessage = "✅ not fake"
