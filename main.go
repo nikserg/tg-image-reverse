@@ -13,7 +13,6 @@ import (
 
 type Config struct {
 	BotToken             string
-	ReverseImageApiToken string
 }
 
 func main() {
@@ -59,10 +58,10 @@ func main() {
 				bodyString := string(bodyBytes)
 				var resultMessage string
 				if !strings.Contains(bodyString, "Таких же изображений не найдено") {
-					resultMessage = "❌ фейк"
+					resultMessage = "❌ fake"
 				} else {
 
-					resultMessage = "✅ не фейк"
+					resultMessage = "✅ not fake"
 				}
 
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, resultMessage)
