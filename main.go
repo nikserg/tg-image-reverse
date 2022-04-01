@@ -2,11 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"regexp"
-	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	jsonconfig "github.com/nikserg/go-json-config"
@@ -42,32 +37,14 @@ func main() {
 			for _, photo := range update.Message.Photo {
 
 				picUrl, _ := bot.GetFileDirectURL(photo.FileID)
-				searchUrl := "https://yandex.ru/images/search?rpt=imageview&url=" + url.QueryEscape(picUrl)
-
-				fmt.Println(searchUrl)
-
-				response, err := http.Get(searchUrl)
-				if err != nil {
-					panic(err)
-				}
-				defer response.Body.Close()
-
-				bodyBytes, err := ioutil.ReadAll(response.Body)
-				if err != nil {
-					panic(err)
-				}
-				bodyString := string(bodyBytes)
+				isNotFake, fakeMessage := CheckYandex(picUrl)
+				// if isNotFake {
+				// 	isNotFake, fakeMessage = CheckTineye(picUrl)
+				// }
 				var resultMessage string
-				if !strings.Contains(bodyString, "Таких же изображений не найдено") {
+				if !isNotFake {
 					resultMessage = "❌ fake \n"
-					r := regexp.MustCompile(`<div class="CbirSites-ItemTitle"><a href="(.+?)" target="_blank" class="Link Link_theme_normal">(.+?)</a>`)
-					for index, match := range r.FindAllStringSubmatch(bodyString, -1) {
-						if index > 5 {
-							break
-						}
-						resultMessage += match[1] + " " + match[2] + "\n"
-					}
-
+					resultMessage += fakeMessage
 				} else {
 
 					resultMessage = "✅ not fake"
